@@ -19,7 +19,7 @@ document.querySelector('#chat').innerHTML = `
     <div class="chat-wrapper">
       <header class="text-center mb-4">
         <h1 class="text-3xl font-bold text-white">Welcome!</h1>
-        <p class="text-gray-300">To the WGCA Smart Health App</p>
+        <p class="text-gray-300">To MediMind</p>
       </header>
 
       <!-- Chat Messages -->

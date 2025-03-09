@@ -33,22 +33,42 @@ if (location.pathname === '/launch') {
     .then((user) => {
       const accessToken = user.access_token;
 
-      return fetch('https://app.meldrx.com/api/fhir/aee14bc8-2892-4859-99c9-3b6fbd7f9fcd/Patient', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((bundle) => {
-          console.log(bundle);
+      // const resourceTypes = ['Patient', 'Observation', 'Condition', 'MedicationRequest', 'AllergyIntolerance', 'Procedure', 'DiagnosticReport'];
+      const resourceTypes = ['Condition'];
 
-          // Sending the data to n8n
+      const fetchPromises = resourceTypes.map((resource) => {
+        return fetch(`https://app.meldrx.com/api/fhir/aee14bc8-2892-4859-99c9-3b6fbd7f9fcd/${resource}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((bundle) => {
+            console.log(`${resource} Data:`, bundle);
+            return { resource, bundle };
+          })
+          .catch((error) => {
+            console.error(`Error fetching ${resource} data:`, error);
+            return { resource, error };
+          });
+      });
+
+      Promise.all(fetchPromises)
+        .then((results) => {
+          const allData = results.reduce((acc, { resource, bundle, error }) => {
+            acc[resource] = error ? { error: error.message } : bundle;
+            return acc;
+          }, {});
+
+          console.log('All FHIR Data:', allData);
+
+          // Sending all the data to n8n
           return fetch('http://localhost:5678/webhook/fetch-data', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(bundle),
+            body: JSON.stringify(allData),
           });
         })
         .then((response) => response.json())

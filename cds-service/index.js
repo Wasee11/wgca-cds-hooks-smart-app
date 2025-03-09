@@ -47,16 +47,16 @@ app.post('/cds-services/:id', (req, res)=> {
                 summary: `Hello ${firstName} ${secondName}, you have ${conditions.total} Conditions`,
                 indicator: 'warning',
                 source: {
-                    label: 'WGCA Health Services'
+                    label: 'MediMind Health Services'
                 },
                 links: [
                     {
-                        label: 'WGCA Health App',
+                        label: 'MediMind Health App',
                         url: 'http://localhost:4434/launch',
                         type: 'absolute' //to start the app using cds hooks
                     },
                     {
-                        label: 'WGCA Smart Health App',
+                        label: 'MediMind Smart Health App',
                         url: 'http://localhost:4434/launch',
                         type: 'smart' //to start the app using smart app launch
                     }
